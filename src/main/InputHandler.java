@@ -6,7 +6,7 @@ package main;
 import java.util.Scanner;
 
 public class InputHandler {
-
+    // TODO: remember to close the Scanner when you're done with it. In these cases, it's before the return statement.
     /**
      * Prompts the user to input their employee ID.
      * @return the user's employee ID

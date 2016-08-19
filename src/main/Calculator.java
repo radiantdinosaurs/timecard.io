@@ -1,5 +1,8 @@
 package main;
 /**
+ * ANDREW:
+ * TODO: this description describes the entire project, but it's supposed to describe only this class.
+ *
  * A simple time card system.
  * @author Bethany Corder
  */
@@ -7,8 +10,14 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
+// ANDREW:
+// TODO: the name of this class is misleading. Consider a name like TimeCardUtil.
 public class Calculator {
+
+    // ANDREW:
+    // TODO: the methods in this class do not rely on member variables or leveraging the benefits of instantiation.
+    // Consider making the methods static and making this an abstract class to prevent instantiation.
+    // This is common known as a utility pattern.
 
     /**
      * Converts the TimeStamp of the employee's clock in/out times into a calculable list of hours.
@@ -28,6 +37,11 @@ public class Calculator {
         hoursWorked = Double.parseDouble(hoursWorkedString);
         //Adding hoursWorked on an ArrayList
         list.add(hoursWorked);
+
+        // ANDREW:
+        // TODO: since this method is already making operations to an instance of ArrayList, you don't need to return
+        // the modified array. It will already be modified. If you wanted to leverage returns, you would return the
+        // hoursWorked instead
         return list;
     }
 
@@ -49,6 +63,10 @@ public class Calculator {
         return totalHoursWorked;
     }
 
+    // ANDREW:
+    // TODO: when accessing static members, you don't instantiate the class.
+    // Usage: Calculator.getCurrentTimeStamp()
+    // To enforce this, you can prevent instantiation of a class by using a private constructor or making it abstract.
     /**
      * Gets the current time.
      * @return TimeStamp containing the current time

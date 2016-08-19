@@ -7,8 +7,33 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class DatabaseRequestProcessor {
+    // ANDREW:
+    // TODO: it's normally very good practice to separate out configuration strings into their own file or class.
+    // You're doing that with these database constants, but you can take it a step further by having a final
+    // class that holds things like table names, column names, etc.
+    // These classes are normally called Contract classes.
+    /**
+     * Example: UserContract.java
+     *
+     * public final class TimeCardContract {
+     *     public static final class UserTable {
+     *         public static String table_name = "user";
+     *         public static String column_id = "id";
+     *         public static String first_name = "first_name";
+     *         ...
+     *     }
+     * }
+     *
+     * To utilize this way of structuring constants within your existing queries,
+     * you can utilize concatenation or use the String.format() method.
+     */
+
+    // ANDREW:
+    // TODO: these constants are using the default modifier, which is appropriate for this case, but normally
+    // if you're defining constants they should be accessible to classes of other packages. Ergo, use the 'public' modifier.
+    // Since the other member variables are only used in this class, you should use the 'private' modifier.
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost:3306/timecard";
+    static final String DB_URL = "jdbc:mysql://192.168.2.7:3306/timecard";
     static final String USER = "root";
     static final String PASS = "SunbaeOppa25!";
     Connection conn = null;
@@ -36,6 +61,24 @@ public class DatabaseRequestProcessor {
      * @return flag used to check for errors
      */
     public boolean queryEmployeeID(boolean error, String employeeID) {
+        // ANDREW:
+        // TODO: the control flow in this method can be made more tersely. See following example:
+        /**
+         * boolean error = false;
+         *
+         * try {
+         *      ...
+         *      error = !rs.next;
+         *      while(rs.next()) {
+         *          ...
+         *      }
+         * }
+         * ...
+         * return error;
+         */
+        // TODO: the error variable here could also be named better. Also, you don't need the error param.
+        // the previous value of error has no baring on the result of this method. By including it in the args,
+        // you lend other developers to think it influences the result.
         try {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT name, manager FROM employees WHERE id = " + employeeID);
@@ -56,7 +99,8 @@ public class DatabaseRequestProcessor {
         } catch(Exception ex) {
             ex.printStackTrace();
         }
-    return error;
+
+        return error;
     }
 
     /**
@@ -82,6 +126,15 @@ public class DatabaseRequestProcessor {
      * Creates a query for all of the employees' hours worked, earnings, and position.
      */
     public void queryTimeReport() {
+        // ANDREW:
+        // TODO: enter empty lines between logical blocks of code can go a long way
+        /**
+         * if( youPutInWhiteSpace ) {
+         *      String hereAndThere = itMakesItEasierToRead();
+         *
+         *      int withThisNextStatement = iAmDoingSomethingDifferent();
+         * }
+         */
         try{
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM employees");
@@ -99,6 +152,7 @@ public class DatabaseRequestProcessor {
                     totalHours = 0;
                     Timestamp inTimestamp = timeCardResults.getTimestamp("in_time");
                     Timestamp outTimestamp = timeCardResults.getTimestamp("out_time");
+
                     c.assignTimestampToArrayList(inTime, inTimestamp);
                     c.assignTimestampToArrayList(outTime, outTimestamp);
                     //Using the Calculator class to find out how many hours the employee worked
@@ -120,6 +174,25 @@ public class DatabaseRequestProcessor {
      * @return flag used to check for errors
      */
     public boolean checkTimeCardStatus(boolean error, String employeePassword, String employeeID) {
+        // ANDREW:
+        // TODO: you're not using the employeeID param, consider taking it out.
+        // TODO: the control flow here can be cleaned up a bit
+        /**
+         * Here's an alternative writing of it:
+         *
+         * ResultSet matchingUsers;
+         *
+         * try {
+         *      String query = "...";
+         *      matchingUsers = conn.createStatement().executeQuery( query );
+         * }
+         * catch (Exception ex) {
+         *      ex.printStackTrace();
+         * }
+         *
+         * return matchingUsers == null || !matchingUsers.next()
+         *
+         */
         try {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT status, in_time FROM timecard_entries WHERE password = "
@@ -176,6 +249,9 @@ public class DatabaseRequestProcessor {
             boolean status = true;
             PreparedStatement ps = conn.prepareStatement("INSERT INTO timecard_entries " +
                     "(employee_id, in_time, status, password, out_time) VALUES (?,?,?,?,?)");
+
+            // ANDREW:
+            // TODO: the parameterIndexes can also be put into the TimecardContract class.
             ps.setString(1, employeeID);
             ps.setTimestamp(2, c.getCurrentTimeStamp());
             ps.setBoolean(3, status);
