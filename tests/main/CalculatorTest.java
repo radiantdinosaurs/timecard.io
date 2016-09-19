@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 public class CalculatorTest {
     @Test
     public void getCurrentTimeStamp() throws Exception {
-        assertNotNull("Return value should never be null.", Calculator.getCurrentTimeStamp());
+        assertNotNull("Return value should never be null.", TimeCardUtil.getCurrentTimeStamp());
     }
 
 }
